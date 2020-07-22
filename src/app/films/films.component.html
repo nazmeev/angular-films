@@ -1,0 +1,26 @@
+<div class="container">
+  <div *ngIf="films.length; then listFilms else noFilms"></div>
+    <ng-template #listFilms>
+      <div class="container mx-sm-0">
+        <div class="row">
+          <div class="col col-lg-4 col-md-6 col-sm-12 mb-4" *ngFor="let film of films | pipeFavorited: favorites">
+            <app-films-item [imgPath]="imgPath" (favorited)="addFavorite($event)" (unfavorited)="removeFavorite($event)" [filmItem]="film"></app-films-item>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col text-center">
+            <button [class]="visibility" class="btn btn-danger " (click)="loadMore()" [disabled] = "!moreActivePopular">Load more...</button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  
+    <ng-template #noFilms>
+      <!-- <app-spiner></app-spiner> -->
+      <div class="row">
+        <div class="col text-center">
+          <h2>No films found</h2>
+        </div>
+      </div>
+    </ng-template>
+</div>
