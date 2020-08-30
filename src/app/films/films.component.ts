@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { FilmsService } from './films.service';
-import { Film } from './film.interface';
-import { Subscription } from 'rxjs';
-import { FavoriteService } from './favorite.service';
-import { Favorite } from './favorite.interface';
+import { Component, OnInit, SimpleChanges } from '@angular/core';
+import { FilmsService } from '../shared/services/films.service';
+import { FavoriteService } from '../shared/services/favorite.service';
+import { Favorite } from '../shared/interfaces/favorite.interface';
+import { responceFilms } from '../shared/interfaces/responceFilms.interface';
+import { forkJoin } from 'rxjs';
+import { Film } from '../shared/interfaces/film.interface';
 
 @Component({
   selector: 'app-films',
@@ -12,88 +13,86 @@ import { Favorite } from './favorite.interface';
 })
 
 export class FilmsComponent implements OnInit {
-  public films: Film[] = [];
-  public favorites: Favorite[] = [];
-  public filmItem:Film;
-  public imgPath = this.filmsService.smallImgPath;
-  public moreActivePopular: boolean = true;
-  public totalPopular: number;
-  public visibility: string;
+  public maxPages: number = 4
+  public loaded: boolean = false
+  public moreActive: boolean = true
 
-  subscription: Subscription;
+  public films: Film[] = []
+  public favorites: Favorite[] = []
+
+  public imgPath = this.filmsService.smallImgPath
 
   constructor(
-    private filmsService: FilmsService,
-    private FavoriteService: FavoriteService
-  ) {
-  }
+    public filmsService: FilmsService,
+    public favoriteService: FavoriteService
+  ) { }
 
   ngOnInit(): void {
-    this.getPopularFilms()
-    this.getVisibility()
-    this.getFavoritedFilms()
-    console.log('this.favorites1', this.favorites);
-    this.subscription = this.filmsService.filmsFiltered$.subscribe(
-      films => this.films = films
-    )
-    this.subscription = this.filmsService.moreVisibled$.subscribe(
-      visibility => this.visibility = visibility
-    )
-  }
-
-  getPopularFilms(){
-    this.films = this.filmsService.getPopularFilms()
-  }
-  getFavoritedFilms(){
-    this.FavoriteService.load().subscribe(favorites => {
-      this.favorites = favorites
-      console.log('this.favorites2', this.favorites);
-    })
-  }
-
-  getVisibility(){  
-    this.visibility = this.filmsService.visibility
-  }
-
-  loadMore(){
-    this.filmsService.page = this.filmsService.page + 1;
-    if(this.filmsService.page >= this.totalPopular){
-      this.moreActivePopular = false;
-    }else{
-      console.log(this.films.length)
-      let moreFilms = this.filmsService.getMoreFilmsPopular();
-      moreFilms.map(film => this.films.push(film))
-      console.log(this.films.length)
+    this.films = this.filmsService.getFilms()
+    if (this.films.length) {
+      console.log('return data from service')
+      this.favorites = this.favoriteService.getFavorites()
+      this.loaded = true
+    } else {
+      this.getPopularFilms()
     }
   }
 
-  addFavorite(id: number){
-    let film = this.films.filter(item => item.id == id)
-    
-    let favId: number = film[0].id;
-    let favTitle: string = film[0].title;
+  getPopularFilms() {
+    console.log('return load data')
+    this.filmsService.setPage(1)
+    forkJoin(
+      this.filmsService.loadFilms(),
+      this.favoriteService.load()
+    )
+      .subscribe(([films, favorites]) => {
+        let filmList: any = films
+        let favoriteList: any = favorites
 
-    const favorite: Favorite = {
-      favId,
-      favTitle
-    }
-    this.FavoriteService.create(favorite).subscribe(fav => {
-      this.favorites.push(fav)
-      this.changeFilms()
-    }, err => console.error( err ))
-  }
-  removeFavorite(id:number){
-    this.FavoriteService.remove(id).subscribe(() => {
-      this.favorites = this.favorites.filter(item => item.favId != id)
-      this.changeFilms()
-    })
+        this.filmsService.setPage(filmList.page + 1)
+        this.filmsService.setFilms(filmList.results)
+        this.favoriteService.setFavorites(favoriteList)
+        this.loaded = true
+
+        this.films = this.filmsService.films
+        this.favorites = this.favoriteService.favorites
+      })
   }
 
-  changeFilms(){
-    this.films.map(item => {
-      console.log('item', item.favorited)
-      let f = this.favorites.filter(fav => fav.favId == item.id)
-      f.length ? item.favorited = true : item.favorited = false
-    })
+  loadMore() {
+    console.log('loadMore')
+
+    if (this.moreActive)
+      this.filmsService.loadFilms().subscribe(
+        (filmList: responceFilms) => {
+          this.filmsService.addFilms(filmList.results)
+          this.filmsService.setPage(filmList.page + 1)
+          this.films = this.filmsService.films
+          if (this.filmsService.getPage() > this.maxPages) {
+            this.moreActive = false
+            this.filmsService.setPage(1)
+          }
+        }, err => console.error('err', err))
   }
+
+  addFavorite(id: number) {
+    console.log('addFavorite')
+    let film = this.filmsService.getFilmById(id)
+
+    let favorite: Favorite = this.favoriteService.implementNewFavorite(film)
+
+    this.favoriteService.create(favorite).subscribe(fav => {
+      this.favoriteService.addFavorites(fav)
+      this.favorites = this.favoriteService.favorites
+    }, err => console.error(err))
+  }
+
+  removeFavorite(id: string) {
+    console.log('removeFavorite')
+    this.favoriteService.remove(id).subscribe(() => {
+      this.favoriteService.removeFavoriteById(id)
+      this.favorites = this.favoriteService.favorites
+    }, err => console.error(err))
+  }
+
 }

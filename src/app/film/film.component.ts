@@ -1,30 +1,33 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FilmService } from './film.service';
+import { Film } from '../shared/interfaces/film.interface';
+import { FilmsService } from '../shared/services/films.service';
 
 @Component({
   selector: 'app-film',
   templateUrl: './film.component.html',
   styleUrls: ['./film.component.css']
 })
-export class FilmComponent {
-  public filmId: number;
-  public filmItem: any;
-  public imgPath = this.filmService.bigBackPath;
+export class FilmComponent implements OnInit{
+  public filmId: number
+  public filmItem: Film
+  public imgPath = this.filmsService.bigBackPath
 
   constructor(
     private route: ActivatedRoute,
-    private filmService: FilmService
+    private filmsService: FilmsService,
   ){
     this.route.params.subscribe(params => {
-      this.filmId = params.filmId;
-      this.getFilm(this.filmId);
-    });
+      this.filmId = params.filmId
+      this.getFilm(this.filmId)
+    })
   }
+  ngOnInit(){}
 
   getFilm(filmId){
-    this.filmService.loadFilm(filmId).subscribe(
+    this.filmsService.loadFilm(filmId).subscribe(
       (result: any) => this.filmItem = result
     )
   }
+  
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpParams, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -25,9 +25,11 @@ export class ApiinterceptorService implements HttpInterceptor{
       tap(
         event => {
           if (event instanceof HttpResponse) console.log('Server response')
+          console.log('HttpResponse', event)
         },
         err => {
           if (err instanceof HttpErrorResponse) {
+            console.log('err.status', err.status)
             if (err.status == 401) this.router.navigate(['/error', { statusCode: err.status, statusText: err.statusText }], {skipLocationChange: true})
           }
         }

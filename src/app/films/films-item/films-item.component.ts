@@ -14,15 +14,14 @@ export class FilmsItemComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   addFavorite(id: number) {
     console.log('addFavoriteItems')
     this.favorited.emit(id);
   }
   removeFavorite(id: number) {
-    console.log('removeFavoriteItems')
+    console.log('FilmsItemComponent removeFavoriteItems')
     this.unfavorited.emit(id);
   }
 }

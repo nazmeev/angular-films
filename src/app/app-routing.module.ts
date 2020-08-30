@@ -1,14 +1,18 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { FilmsComponent } from './films/films.component';
-import { PeopleComponent } from './people/people.component';
-import { NotFoundComponent } from './not-found/not-found.component';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { FilmComponent } from './film/film.component';
+import { FavoritesComponent } from './favorites/favorites.component';
 
 const appRoutes: Routes = [
+  {path: '', 
+    redirectTo: '/films',
+    pathMatch: 'full'
+  },
   {path: 'films', component: FilmsComponent},
-  {path: 'people', component: PeopleComponent},
   {path: 'films/:filmId', component: FilmComponent},
+  {path: 'favorites', component: FavoritesComponent},
   {path: '**', component:  NotFoundComponent},
 ]
 @NgModule({

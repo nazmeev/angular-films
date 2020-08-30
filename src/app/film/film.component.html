@@ -6,19 +6,11 @@
       <div class="col-sm-12 col-md-6 col-lg-8 ">
         <div class="card">
             <div class="card-body">
-            <h5 class="card-title">{{ filmItem.title }} <span>({{ filmItem.release_date | date: 'yyyy' }})</span></h5>
-            <p class="card-text limit-height">{{ filmItem.overview}}</p>
-            <div>
-                <div class="container d-flex justify-content-center padding">
-                    <div class="row">
-                        <div class="col-md-9 col-sm-6">
-                            <div class="progress blue"> <span class="progress-left"> <span class="progress-bar"></span> </span> <span class="progress-right"> <span class="progress-bar"></span> </span>
-                                <div class="progress-value">{{ filmItem.vote_average * 10   }}%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h5 class="card-title">{{ filmItem.title }} <span>({{ filmItem.release_date | date: 'yyyy' }})</span></h5>
+                <p class="card-text limit-height">{{ filmItem.overview}}</p>
+                <div>Vote: {{ filmItem.vote_average }}</div>
             </div>
         </div>
+      </div>
     </div>
 </div>

@@ -5,20 +5,18 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NotFoundComponent } from './not-found/not-found.component';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { FilmsComponent } from './films/films.component';
-import { MenuComponent } from './menu/menu.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
-// import { RouterModule } from '@angular/router';
 import { FilmComponent } from './film/film.component';
 import { FilmsItemComponent } from './films/films-item/films-item.component';
-import { SearchComponent } from './search/search.component';
-import { ApiinterceptorService } from './apiinterceptor.service';
-import { PeopleComponent } from './people/people.component';
-import { SpinerComponent } from './spiner/spiner.component';
+import { ApiinterceptorService } from './shared/services/apiinterceptor.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PipeFavoritedPipe } from './shared/pipes/pipe-favorited.pipe';
+import { FavoritesComponent } from './favorites/favorites.component';
+import { FavoritesItemComponent } from './favorites/favorites-item/favorites-item.component';
+import { MenuComponent } from './shared/components/menu/menu.component';
 
 @NgModule({
   declarations: [
@@ -28,10 +26,9 @@ import { PipeFavoritedPipe } from './shared/pipes/pipe-favorited.pipe';
     MenuComponent,
     FilmComponent,
     FilmsItemComponent,
-    SearchComponent,
-    PeopleComponent,
-    SpinerComponent,
     PipeFavoritedPipe,
+    FavoritesComponent,
+    FavoritesItemComponent
   ],
   imports: [
     BrowserModule,
